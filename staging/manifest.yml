@@ -1,0 +1,30 @@
+modules:
+  macro:
+    - key: spec-forge-staging
+      resource: main
+      title: Spec Forge (Staging)
+      description: Edit specs and generate code
+
+resources:
+  - key: main
+    path: static
+
+permissions:
+  scopes:
+    - read:page:confluence
+    - write:page:confluence
+    - read:content.permission:confluence
+
+  content:
+    styles:
+      - 'unsafe-inline'
+
+  external:
+    fetch:
+      client:
+        - https://v-oleksiienko-dev.xyz
+
+app:
+  runtime:
+    name: nodejs24.x
+  id: ari:cloud:ecosystem::app/107601f1-9244-4fec-a485-fe9b10978b90

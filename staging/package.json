@@ -1,0 +1,13 @@
+{
+  "name": "spec-forge-confluence-plugin",
+  "version": "1.0.0",
+  "description": "Atlassian Forge wrapper for Spec Forge",
+  "main": "sync-dist.js",
+  "scripts": {
+    "sync": "node sync-dist.js",
+    "deploy:staging": "npm run sync && forge deploy -e staging"
+  },
+  "dependencies": {
+    "fs-extra": "^11.3.4"
+  }
+}

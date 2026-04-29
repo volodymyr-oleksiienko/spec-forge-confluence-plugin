@@ -1,0 +1,7 @@
+.idea
+
+prod/static
+
+staging/static
+
+node_modules/

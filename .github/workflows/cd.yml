@@ -1,0 +1,55 @@
+name: Deploy to Atlassian Forge (Production)
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Confluence Plugin Code
+        uses: actions/checkout@v4
+        with:
+          path: spec-forge-confluence-plugin
+
+      - name: Checkout Front Code
+        uses: actions/checkout@v4
+        with:
+          repository: 'volodymyr-oleksiienko/spec-forge-front'
+          token: ${{ secrets.SPEC_FORGE_CI_CHECKOUT_PAT }}
+          path: spec-forge-front
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24.x'
+          cache: 'npm'
+          cache-dependency-path: 'spec-forge-front/package-lock.json'
+
+      - name: Install and Build Frontend
+        working-directory: ./spec-forge-front
+        run: |
+          npm ci
+          npm run build:forge:prod
+
+      - name: Prepare Forge Static & Manifest
+        run: |
+          mkdir -p forge-deploy-bundle/static
+          
+          cp -r spec-forge-front/dist/* forge-deploy-bundle/static/
+          
+          cp spec-forge-confluence-plugin/prod/manifest.yml forge-deploy-bundle/manifest.yml
+
+      - name: Install Forge CLI
+        run: npm install -g @forge/cli@12.19.0
+
+      - name: Deploy to Atlassian
+        working-directory: ./forge-deploy-bundle
+        run: |
+          forge settings set usage-analytics false
+          forge deploy -e production
+        env:
+          FORGE_EMAIL: ${{ secrets.ATLASSIAN_FORGE_EMAIL }}
+          FORGE_API_TOKEN: ${{ secrets.ATLASSIAN_FORGE_API_TOKEN }}
